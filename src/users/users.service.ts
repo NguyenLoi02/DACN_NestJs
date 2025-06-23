@@ -4,7 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, mongo } from 'mongoose';
 import { User } from './schemas/user.schema';
-import { genSaltSync, hashSync } from 'bcrypt';
+import { compare, genSaltSync, hashSync } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -17,7 +17,7 @@ export class UsersService {
   };
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    createUserDto.password =await this.hashPassword(createUserDto.password);
+    createUserDto.password = await this.hashPassword(createUserDto.password);
     const createUser = await this.userModel.create(createUserDto);
     return createUser;
   }
@@ -27,23 +27,28 @@ export class UsersService {
   }
 
   findOne(id: string) {
-    return this.userModel.findOne({_id:id})
+    return this.userModel.findOne({ _id: id });
   }
-  
-async update(updateUserDto: UpdateUserDto) {
-  const { _id, ...updateData } = updateUserDto;
-  console.log('Đang cập nhật user với _id:', _id);
-  console.log('Dữ liệu cập nhật:', {...updateData});
 
-  return await this.userModel.updateOne({ _id }, updateData);
-}
+  findOneByUsername(username: string) {
+    return this.userModel.findOne({ email: username });
+  }
+  isValidPassword(password: string, hash: string) {
+    return compare(password, hash);
+  }
 
+  async update(updateUserDto: UpdateUserDto) {
+    const { _id, ...updateData } = updateUserDto;
+    console.log('Đang cập nhật user với _id:', _id);
+    console.log('Dữ liệu cập nhật:', { ...updateData });
+
+    return await this.userModel.updateOne({ _id }, updateData);
+  }
 
   remove(id: string) {
-    if(!mongoose.Types.ObjectId.isValid(id)){
-      return 'not found user'
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'not found user';
     }
-    return this.userModel.deleteOne({_id:id})
+    return this.userModel.deleteOne({ _id: id });
   }
 }
- 
