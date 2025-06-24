@@ -8,12 +8,19 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  app.useGlobalPipes(new  ValidationPipe())
+  app.useGlobalPipes(new ValidationPipe());
   const reflector = app.get(Reflector);
 
   //Kiểm tra JWT
   // app.useGlobalGuards(new JwtAuthGuard(reflector));
 
-  await app.listen(configService.get<string>('PORT')|| 3000);
+  //CORS
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
+  await app.listen(configService.get<string>('PORT') || 3000);
 }
 bootstrap();
