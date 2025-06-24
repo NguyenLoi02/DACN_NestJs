@@ -5,20 +5,41 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './passport/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './passport/jwt.strategy';
+import ms from 'ms';
 @Module({
+  // imports: [
+  //   UsersModule,
+  //   PassportModule,
+  //   JwtModule.registerAsync({
+  //     imports: [ConfigModule],
+  //     useFactory: async (configService: ConfigService) => ({
+  //       secret: configService.get<string>("JWT_ACCESS_TOKEN"),
+  //       signOptions: {
+  //         expiresIn: configService.get('JWT_EXPIRE')
+  //       },
+  //     }),
+  //     inject: [ConfigService],
+  //   }),
+  // ],
+
   imports: [
     UsersModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>("JWT_SECRET"),
-        signOptions: {
-            expiresIn: configService.get<string>("JWT_EXPIRE"),
-        },
-      }),
       inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const jwtExpire = configService.get<string>('JWT_EXPIRE') ?? '1h';
+        const ms = require('ms'); // ✅ dùng CommonJS chuẩn 100% không lỗi
+
+        return {
+          secret: configService.get<string>('JWT_ACCESS_TOKEN'),
+          signOptions: {
+            expiresIn: ms(configService.get('JWT_EXPIRE') ?? '1h') / 1000
+          },
+        };
+      },
     }),
   ],
   providers: [AuthService, LocalStrategy,JwtStrategy],

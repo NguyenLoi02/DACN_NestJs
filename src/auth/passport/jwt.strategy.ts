@@ -6,13 +6,14 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService,) {
+    //lấy jwt
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>("JWT_SECRET") ||'asasd',
+      secretOrKey: configService.get<string>("JWT_ACCESS_TOKEN") ||'asasd',
     });
   }
-
+//hàm giải mã (decode)
   async validate(payload: any) {
     return { userId: payload.sub, username: payload.username };
   }
