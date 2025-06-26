@@ -40,9 +40,6 @@ export class UsersService {
 
   async update(updateUserDto: UpdateUserDto) {
     const { _id, ...updateData } = updateUserDto;
-    console.log('Đang cập nhật user với _id:', _id);
-    console.log('Dữ liệu cập nhật:', { ...updateData });
-
     return await this.userModel.updateOne({ _id }, updateData);
   }
 
