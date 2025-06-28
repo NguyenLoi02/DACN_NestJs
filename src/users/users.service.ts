@@ -7,6 +7,8 @@ import { User, UserDocument } from './schemas/user.schema';
 import { compare, genSaltSync, hashSync } from 'bcrypt';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './users.interface';
+import aqp from 'api-query-params';
+import { isEmpty } from 'class-validator';
 
 @Injectable()
 export class UsersService {
@@ -40,16 +42,46 @@ export class UsersService {
         email: user.email,
       },
     });
-    console.log(user);
     return createUser;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(currentPage: number, limit: number, qs: string) {
+    const { filter, projection, population } = aqp(qs);
+    delete filter.page;
+    delete filter.limit;
+    let { sort } = aqp(qs);
+    let offset = (+currentPage - 1) * +limit;
+    let defaultLimit = +limit ? +limit : 10;
+
+    const totalItems = (await this.userModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    if (isEmpty(sort)) {
+      // @ts-ignore: Unreachable code error
+      sort = '-updatedAt';
+    }
+
+    const result = await this.userModel
+      .find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort as any)
+      .populate(population)
+      .select("-password")
+      .exec();
+    return {
+      meta: {
+        current: currentPage, //trang hiện tại
+        pageSize: limit, //số lượng bản ghi đã lấy
+        pages: totalPages, //tổng số trang với điều kiện query
+        total: totalItems, // tổng số phần tử (số bản ghi)
+      },
+      result, //kết quả query
+    };
   }
 
   findOne(id: string) {
-    return this.userModel.findOne({ _id: id });
+    return this.userModel.findOne({ _id: id }).select('-password');
   }
 
   findOneByUsername(username: string) {
@@ -74,14 +106,13 @@ export class UsersService {
     return newUpdate;
   }
 
-  remove(id: string, user: IUser) {
+  async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'not found user';
     }
-    const userUpdate = this.userModel.findOne({ _id: id });
-    this.userModel.updateOne(
+    await this.userModel.updateOne(
       { _id: id },
-      { ...userUpdate, deletedBy: { _id: user._id, email: user.email } },
+      { deletedBy: { _id: user._id, email: user.email } },
     );
     return this.userModel.softDelete({ _id: id });
   }
@@ -103,5 +134,12 @@ export class UsersService {
       role: 'user',
     });
     return newRegister;
+  }
+
+  updateUserToken = async (refreshToken:string, _id: string)=>{
+    return await this,this.userModel.updateOne(
+      {_id},
+      {refreshToken}
+    )
   }
 }

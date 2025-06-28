@@ -5,7 +5,7 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { TransformInterceptor } from './core/transform.interceptor';
-
+import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
@@ -34,6 +34,8 @@ async function bootstrap() {
     // prefix: 'api/v'
   });
 
+  //config cookie
+  app.use(cookieParser());
   await app.listen(configService.get<string>('PORT') || 3000);
 }
 bootstrap();

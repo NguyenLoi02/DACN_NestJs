@@ -37,16 +37,16 @@ export class User {
   role: string;
 
   @Prop()
-  refreshToken: Date;
+  refreshToken: string;
 
   @Prop({type: Object})
-  createBy: {
+  createdBy: {
     _id: mongoose.Schema.Types.ObjectId;
     email: string
   }
   
   @Prop({type: Object})
-  updateBy: {
+  updatedBy: {
     _id: mongoose.Schema.Types.ObjectId;
     email: string
   }

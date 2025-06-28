@@ -15,7 +15,7 @@ import { AuthController } from './auth.controller';
   //   JwtModule.registerAsync({
   //     imports: [ConfigModule],
   //     useFactory: async (configService: ConfigService) => ({
-  //       secret: configService.get<string>("JWT_ACCESS_TOKEN"),
+  //       secret: configService.get<string>("JWT_ACCESS_TOKEN_SECRET"),
   //       signOptions: {
   //         expiresIn: configService.get('JWT_EXPIRE')
   //       },
@@ -35,7 +35,7 @@ import { AuthController } from './auth.controller';
         const ms = require('ms'); // ✅ dùng CommonJS chuẩn 100% không lỗi
 
         return {
-          secret: configService.get<string>('JWT_ACCESS_TOKEN'),
+          secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
           signOptions: {
             expiresIn: ms(configService.get('JWT_EXPIRE') ?? '1h') / 1000
           },
