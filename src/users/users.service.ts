@@ -142,4 +142,10 @@ export class UsersService {
       {refreshToken}
     )
   }
+  findUserToken = async (refreshToken:string)=>{
+    return await this,this.userModel.findOne(
+      {refreshToken}
+    )
+  }
+
 }
