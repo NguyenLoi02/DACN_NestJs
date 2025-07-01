@@ -92,7 +92,7 @@ export class AuthService {
         //update user with refresh token
         await this.usersService.updateUserToken(refresh_token, _id.toString());
         //set refresh_token as cookies
-        response.clearCookie('refresh_token')
+        response.clearCookie('refresh_token');
         response.cookie('refresh_token', refresh_token, {
           httpOnly: true,
           maxAge: ms('1d'),
@@ -108,5 +108,11 @@ export class AuthService {
         'Refresh token không hợp lệ, vui lòng login',
       );
     }
+  };
+
+  logout = async (user: IUser, response: Response) => {
+    await this.usersService.updateUserToken('', user._id);
+    response.clearCookie('refresh_token');
+    return 'ok';
   };
 }
