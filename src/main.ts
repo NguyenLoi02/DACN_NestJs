@@ -20,10 +20,11 @@ async function bootstrap() {
 
   //CORS
   app.enableCors({
-    origin: '*',
+    origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
+    credentials: true
   });
 
   //config versioning
@@ -36,6 +37,6 @@ async function bootstrap() {
 
   //config cookie
   app.use(cookieParser());
-  await app.listen(configService.get<string>('PORT') || 3000);
+  await app.listen(configService.get<string>('PORT') || 8000);
 }
 bootstrap();

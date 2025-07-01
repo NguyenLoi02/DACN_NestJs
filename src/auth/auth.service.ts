@@ -48,7 +48,6 @@ export class AuthService {
       httpOnly: true,
       maxAge: ms('1d'),
     });
-
     return {
       access_token: this.jwtService.sign(payload),
       user: { _id, name, email, role },

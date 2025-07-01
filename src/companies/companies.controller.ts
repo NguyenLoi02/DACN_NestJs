@@ -26,7 +26,7 @@ export class CompaniesController {
 
   @Get()
   @ResponseMessage('respont message')
-  findAll(@Query('page') currentPage: string, @Query('limit') limit: string, @Query() qs: string) {
+  findAll(@Query('current') currentPage: string, @Query('pageSize') limit: string, @Query() qs: string) {
     return this.companiesService.findAll(+currentPage, +limit,qs);
   }
 

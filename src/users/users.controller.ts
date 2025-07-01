@@ -21,7 +21,7 @@ export class UsersController {
 
   @Get()
   @ResponseMessage('respont message')
-  findAll(@Query('page') currentPage: string, @Query('limit') limit: string, @Query() qs: string) {
+  findAll(@Query('current') currentPage: string, @Query('pageSize') limit: string, @Query() qs: string) {
     return this.usersService.findAll(+currentPage, +limit,qs);
   }
 
