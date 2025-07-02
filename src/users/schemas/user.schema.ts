@@ -1,11 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { BaseSchemas } from 'src/schemas/base.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
 @Schema({timestamps: true })
-export class User {
+export class User extends BaseSchemas {
   @IsEmail()
   @Prop()
   @IsNotEmpty()
@@ -39,35 +40,6 @@ export class User {
   @Prop()
   refreshToken: string;
 
-  @Prop({type: Object})
-  createdBy: {
-    _id: mongoose.Schema.Types.ObjectId;
-    email: string
-  }
-  
-  @Prop({type: Object})
-  updatedBy: {
-    _id: mongoose.Schema.Types.ObjectId;
-    email: string
-  }
-
-  @Prop({type: Object})
-  deletedBy: {
-    _id: mongoose.Schema.Types.ObjectId;
-    email: string
-  }
-
-  @Prop()
-  createdAt: Date;
-
-  @Prop()
-  updateAt: Date;
-
-  @Prop()
-  isDeleted: boolean;
-
-  @Prop()
-  deletedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

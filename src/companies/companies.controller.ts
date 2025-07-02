@@ -20,14 +20,13 @@ export class CompaniesController {
 
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
-    console.log(user);
     return this.companiesService.create(createCompanyDto, user);
   }
 
   @Get()
   @ResponseMessage('respont message')
-  findAll(@Query('current') currentPage: string, @Query('pageSize') limit: string, @Query() qs: string) {
-    return this.companiesService.findAll(+currentPage, +limit,qs);
+  findAll(@Query('current') current: string, @Query('pageSize') pageSize: string, @Query() qs: string) {
+    return this.companiesService.findAll(+current, +pageSize,qs);
   }
 
   @Get(':id')
