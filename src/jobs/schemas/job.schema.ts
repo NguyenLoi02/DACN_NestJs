@@ -1,8 +1,9 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { BaseSchemas } from 'src/schemas/base.schema';
 export type JobDocument = HydratedDocument<Job>;
-export class Job extends BaseSchemas{
+@Schema({timestamps: true })
+export class Job extends BaseSchemas {
   @Prop()
   name: string;
 
@@ -13,6 +14,7 @@ export class Job extends BaseSchemas{
   company: {
     _id: mongoose.Schema.Types.ObjectId;
     name: string;
+    logo: string;
   };
 
   @Prop()
@@ -28,7 +30,7 @@ export class Job extends BaseSchemas{
   level: string;
 
   @Prop()
-  description : string;
+  description: string;
 
   @Prop()
   startDate: Date;
@@ -38,6 +40,5 @@ export class Job extends BaseSchemas{
 
   @Prop()
   isActive: boolean;
-
 }
 export const JobSchema = SchemaFactory.createForClass(Job);

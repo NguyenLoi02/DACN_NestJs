@@ -1,26 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { CreateJobDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
-import { Job, JobDocument } from './schemas/job.schema';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
+import { Role, RoleDocument } from './schemas/role.schema';
 import { isEmpty } from 'class-validator';
 
 @Injectable()
-export class JobsService {
+export class RolesService {
   constructor(
-    @InjectModel(Job.name)
-    private jobModel: SoftDeleteModel<JobDocument>,
+    @InjectModel(Role.name)
+    private RolemModel: SoftDeleteModel<RoleDocument>,
   ) {}
-   create(createJobDto: CreateJobDto, user: IUser) {
-    const newJob = {...createJobDto, createdBy: {
-      _id: user._id,
-      email: user.email,
-    },}
-     return  this.jobModel.create(newJob);
+  async create(createRoleDto: CreateRoleDto, user: IUser) {
+    const { name } = createRoleDto;
+    const isExist = await this.RolemModel.findOne({ name });
+    if (isExist) {
+      throw new BadRequestException('Role với name="${name}" đã tồn tại');
+    }
+    return await this.RolemModel.create({
+      ...createRoleDto,
+      createdBy: {
+        _id: user._id,
+        email: user.email,
+      },
+    });
   }
 
   async findAll(currentPage: number, limit: number, qs: string) {
@@ -31,7 +38,7 @@ export class JobsService {
     let offset = (+currentPage - 1) * +limit;
     let defaultLimit = +limit ? +limit : 10;
 
-    const totalItems = (await this.jobModel.find(filter)).length;
+    const totalItems = (await this.RolemModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
     if (isEmpty(sort)) {
@@ -39,8 +46,7 @@ export class JobsService {
       sort = '-updatedAt';
     }
 
-    const result = await this.jobModel
-      .find(filter)
+    const result = await this.RolemModel.find(filter)
       .skip(offset)
       .limit(defaultLimit)
       .sort(sort as any)
@@ -57,13 +63,24 @@ export class JobsService {
     };
   }
 
-  findOne(id: string) {
-    return this.jobModel.findOne({ _id: id });
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('not found role');
+    }
+    return await this.RolemModel.findById({ _id: id }).populate({
+      path: 'permissions',
+      select: { _id: 1, apiPath: 1, name: 1, method: 1 },
+    });
   }
 
-  update(UpdateJobDto: UpdateJobDto, user: IUser) {
-    const { _id, ...updateData } = UpdateJobDto;
-    return this.jobModel.updateOne(
+  async update(updateRoleDto: UpdateRoleDto, user: IUser) {
+    const { name } = updateRoleDto;
+    const isExist = await this.RolemModel.findOne({ name });
+    if (isExist) {
+      throw new BadRequestException('Role với name="${name}" đã tồn tại');
+    }
+    const { _id, ...updateData } = updateRoleDto;
+    return await this.RolemModel.updateOne(
       { _id },
       {
         ...updateData,
@@ -79,7 +96,7 @@ export class JobsService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'not found user';
     }
-    await this.jobModel.updateOne(
+    await this.RolemModel.updateOne(
       { _id: id },
       {
         deletedBy: {
@@ -88,6 +105,6 @@ export class JobsService {
         },
       },
     );
-    return this.jobModel.softDelete({ _id: id });
+    return this.RolemModel.softDelete({ _id: id });
   }
 }

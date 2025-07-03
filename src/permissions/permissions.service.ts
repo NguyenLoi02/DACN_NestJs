@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { CreateJobDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
-import { Job, JobDocument } from './schemas/job.schema';
+import { CreatePermissionDto } from './dto/create-permission.dto';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
+import { Permission, PermissionDocument } from './schemas/permission.schema';
 import { isEmpty } from 'class-validator';
 
 @Injectable()
-export class JobsService {
+export class PermissionsService {
   constructor(
-    @InjectModel(Job.name)
-    private jobModel: SoftDeleteModel<JobDocument>,
+    @InjectModel(Permission.name)
+    private PermissionmModel: SoftDeleteModel<PermissionDocument>,
   ) {}
-   create(createJobDto: CreateJobDto, user: IUser) {
-    const newJob = {...createJobDto, createdBy: {
-      _id: user._id,
-      email: user.email,
-    },}
-     return  this.jobModel.create(newJob);
+  create(createPermissionDto: CreatePermissionDto, user: IUser) {
+    return this.PermissionmModel.create({
+      ...createPermissionDto,
+      createdBy: {
+        _id: user._id,
+        email: user.email,
+      },
+    });
   }
 
   async findAll(currentPage: number, limit: number, qs: string) {
@@ -31,7 +33,7 @@ export class JobsService {
     let offset = (+currentPage - 1) * +limit;
     let defaultLimit = +limit ? +limit : 10;
 
-    const totalItems = (await this.jobModel.find(filter)).length;
+    const totalItems = (await this.PermissionmModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
     if (isEmpty(sort)) {
@@ -39,7 +41,7 @@ export class JobsService {
       sort = '-updatedAt';
     }
 
-    const result = await this.jobModel
+    const result = await this.PermissionmModel
       .find(filter)
       .skip(offset)
       .limit(defaultLimit)
@@ -58,12 +60,12 @@ export class JobsService {
   }
 
   findOne(id: string) {
-    return this.jobModel.findOne({ _id: id });
+    return this.PermissionmModel.findOne({ _id: id });
   }
 
-  update(UpdateJobDto: UpdateJobDto, user: IUser) {
-    const { _id, ...updateData } = UpdateJobDto;
-    return this.jobModel.updateOne(
+  update(updatePermissionDto: UpdatePermissionDto, user: IUser) {
+    const { _id, ...updateData } = updatePermissionDto;
+    return this.PermissionmModel.updateOne(
       { _id },
       {
         ...updateData,
@@ -79,7 +81,7 @@ export class JobsService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'not found user';
     }
-    await this.jobModel.updateOne(
+    await this.PermissionmModel.updateOne(
       { _id: id },
       {
         deletedBy: {
@@ -88,6 +90,6 @@ export class JobsService {
         },
       },
     );
-    return this.jobModel.softDelete({ _id: id });
+    return this.PermissionmModel.softDelete({ _id: id });
   }
 }

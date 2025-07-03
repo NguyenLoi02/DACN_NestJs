@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { JobsService } from './jobs.service';
-import { User, ResponseMessage } from 'src/decorator/customize';
+import { User, ResponseMessage, Public } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
@@ -16,12 +16,14 @@ export class JobsController {
   }
 
   @Get()
+  @Public()
   @ResponseMessage('respont message')
   findAll(@Query('current') current: string, @Query('pageSize') pageSize: string, @Query() qs: string) {
     return this.jobsService.findAll(+current, +pageSize,qs);
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.jobsService.findOne(id);
   }

@@ -9,6 +9,8 @@ import { softDeletePlugin } from 'soft-delete-plugin-mongoose';
 import { CompaniesModule } from './companies/companies.module';
 import { JobsModule } from './jobs/jobs.module';
 import { FileModule } from './file/file.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { RolesModule } from './roles/roles.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +33,8 @@ import { FileModule } from './file/file.module';
     CompaniesModule,
     JobsModule,
     FileModule,
+    PermissionsModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService,
