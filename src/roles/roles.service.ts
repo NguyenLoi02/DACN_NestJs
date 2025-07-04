@@ -69,16 +69,16 @@ export class RolesService {
     }
     return await this.RolemModel.findById({ _id: id }).populate({
       path: 'permissions',
-      select: { _id: 1, apiPath: 1, name: 1, method: 1 },
+      select: { _id: 1, apiPath: 1, name: 1, method: 1 , module: 1},
     });
   }
 
   async update(updateRoleDto: UpdateRoleDto, user: IUser) {
-    const { name } = updateRoleDto;
-    const isExist = await this.RolemModel.findOne({ name });
-    if (isExist) {
-      throw new BadRequestException('Role với name="${name}" đã tồn tại');
-    }
+    // const { name } = updateRoleDto;
+    // const isExist = await this.RolemModel.findOne({ name });
+    // if (isExist) {
+    //   throw new BadRequestException('Role với name="${name}" đã tồn tại');
+    // }
     const { _id, ...updateData } = updateRoleDto;
     return await this.RolemModel.updateOne(
       { _id },

@@ -11,6 +11,7 @@ import { JobsModule } from './jobs/jobs.module';
 import { FileModule } from './file/file.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
+import { ResumesModule } from './resumes/resumes.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,6 +36,7 @@ import { RolesModule } from './roles/roles.module';
     FileModule,
     PermissionsModule,
     RolesModule,
+    ResumesModule,
   ],
   controllers: [AppController],
   providers: [AppService,
