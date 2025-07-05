@@ -1,17 +1,16 @@
-import { IsMongoId, IsNotEmpty } from "class-validator";
+import { IsEmail, IsMongoId, IsNotEmpty } from "class-validator";
 import mongoose from "mongoose";
 
 export class CreateResumeDto {
     @IsNotEmpty({ message: ' email không được để trống' })
+    @IsEmail({}, { message: 'email không hợp lệ'})
     email : string;
 
-    @IsNotEmpty({ message: ' userId  không được để trống' })
     userId : mongoose.Schema.Types.ObjectId;
 
     @IsNotEmpty({ message: ' url không được để trống' })
     url: string;
 
-    @IsNotEmpty({ message: ' status không được để trống' })
     status: string;
 
     @IsNotEmpty({ message: ' companyId không được để trống' })

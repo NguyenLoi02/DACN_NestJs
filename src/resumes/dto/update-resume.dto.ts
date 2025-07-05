@@ -23,7 +23,7 @@ class History{
     @Type(()=>UpdatedBy)
     updatedBy: UpdatedBy
 }
-export class UpdateResumeDto extends PartialType(CreateResumeDto) {
+export class UpdateResumeDto extends PartialType(CreateResumeDto) { 
     @IsNotEmpty({message: 'history không được để trống'})
     @IsArray({message: 'history có định dạng là array'})
     @ValidateNested()

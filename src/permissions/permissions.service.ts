@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,10 +13,10 @@ import { isEmpty } from 'class-validator';
 export class PermissionsService {
   constructor(
     @InjectModel(Permission.name)
-    private PermissionmModel: SoftDeleteModel<PermissionDocument>,
+    private permissionmModel: SoftDeleteModel<PermissionDocument>,
   ) {}
   create(createPermissionDto: CreatePermissionDto, user: IUser) {
-    return this.PermissionmModel.create({
+    return this.permissionmModel.create({
       ...createPermissionDto,
       createdBy: {
         _id: user._id,
@@ -33,7 +33,7 @@ export class PermissionsService {
     let offset = (+currentPage - 1) * +limit;
     let defaultLimit = +limit ? +limit : 10;
 
-    const totalItems = (await this.PermissionmModel.find(filter)).length;
+    const totalItems = (await this.permissionmModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
     if (isEmpty(sort)) {
@@ -41,7 +41,7 @@ export class PermissionsService {
       sort = '-updatedAt';
     }
 
-    const result = await this.PermissionmModel
+    const result = await this.permissionmModel
       .find(filter)
       .skip(offset)
       .limit(defaultLimit)
@@ -60,12 +60,15 @@ export class PermissionsService {
   }
 
   findOne(id: string) {
-    return this.PermissionmModel.findOne({ _id: id });
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      throw new BadRequestException('not found permission')
+    }
+    return this.permissionmModel.findOne({ _id: id });
   }
 
   update(updatePermissionDto: UpdatePermissionDto, user: IUser) {
     const { _id, ...updateData } = updatePermissionDto;
-    return this.PermissionmModel.updateOne(
+    return this.permissionmModel.updateOne(
       { _id },
       {
         ...updateData,
@@ -81,7 +84,7 @@ export class PermissionsService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'not found user';
     }
-    await this.PermissionmModel.updateOne(
+    await this.permissionmModel.updateOne(
       { _id: id },
       {
         deletedBy: {
@@ -90,6 +93,8 @@ export class PermissionsService {
         },
       },
     );
-    return this.PermissionmModel.softDelete({ _id: id });
+    return this.permissionmModel.softDelete({ _id: id });
   }
+
+  
 }
