@@ -90,7 +90,13 @@ export class ResumesService {
   }
 
   async findByUsers(user: IUser) {
-    return await this.resumemModel.find({ userId: user._id });
+    return await this.resumemModel
+      .find({ userId: user._id })
+      .sort('-createdAt')
+      .populate([
+        { path: 'companyId', select: { name: 1 } },
+        { path: 'jobId', select: { name: 1 } },
+      ]);
   }
 
   async update(_id: string, status: string, user: IUser) {
@@ -121,7 +127,19 @@ export class ResumesService {
     return updated;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} resume`;
+  async remove(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'not found user';
+    }
+    await this.resumemModel.updateOne(
+      { _id: id },
+      {
+        deletedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
+    );
+    return this.resumemModel.softDelete({ _id: id });
   }
 }

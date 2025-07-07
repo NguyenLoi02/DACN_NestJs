@@ -13,10 +13,10 @@ import { isEmpty } from 'class-validator';
 export class PermissionsService {
   constructor(
     @InjectModel(Permission.name)
-    private permissionmModel: SoftDeleteModel<PermissionDocument>,
+    private permissionModel: SoftDeleteModel<PermissionDocument>,
   ) {}
   create(createPermissionDto: CreatePermissionDto, user: IUser) {
-    return this.permissionmModel.create({
+    return this.permissionModel.create({
       ...createPermissionDto,
       createdBy: {
         _id: user._id,
@@ -33,7 +33,7 @@ export class PermissionsService {
     let offset = (+currentPage - 1) * +limit;
     let defaultLimit = +limit ? +limit : 10;
 
-    const totalItems = (await this.permissionmModel.find(filter)).length;
+    const totalItems = (await this.permissionModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
     if (isEmpty(sort)) {
@@ -41,7 +41,7 @@ export class PermissionsService {
       sort = '-updatedAt';
     }
 
-    const result = await this.permissionmModel
+    const result = await this.permissionModel
       .find(filter)
       .skip(offset)
       .limit(defaultLimit)
@@ -63,12 +63,12 @@ export class PermissionsService {
     if(!mongoose.Types.ObjectId.isValid(id)){
       throw new BadRequestException('not found permission')
     }
-    return this.permissionmModel.findOne({ _id: id });
+    return this.permissionModel.findOne({ _id: id });
   }
 
   update(updatePermissionDto: UpdatePermissionDto, user: IUser) {
     const { _id, ...updateData } = updatePermissionDto;
-    return this.permissionmModel.updateOne(
+    return this.permissionModel.updateOne(
       { _id },
       {
         ...updateData,
@@ -84,7 +84,7 @@ export class PermissionsService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'not found user';
     }
-    await this.permissionmModel.updateOne(
+    await this.permissionModel.updateOne(
       { _id: id },
       {
         deletedBy: {
@@ -93,7 +93,7 @@ export class PermissionsService {
         },
       },
     );
-    return this.permissionmModel.softDelete({ _id: id });
+    return this.permissionModel.softDelete({ _id: id });
   }
 
   

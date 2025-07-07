@@ -8,6 +8,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
 import { Role, RoleDocument } from './schemas/role.schema';
 import { isEmpty } from 'class-validator';
+import { ADMIN_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class RolesService {
@@ -73,15 +74,15 @@ export class RolesService {
     });
   }
 
-  async update(updateRoleDto: UpdateRoleDto, user: IUser) {
+  async update(id: string, updateRoleDto: UpdateRoleDto, user: IUser) {
     // const { name } = updateRoleDto;
     // const isExist = await this.RolemModel.findOne({ name });
     // if (isExist) {
     //   throw new BadRequestException('Role với name="${name}" đã tồn tại');
     // }
-    const { _id, ...updateData } = updateRoleDto;
+    const {...updateData } = updateRoleDto;
     return await this.RolemModel.updateOne(
-      { _id },
+      { _id: id },
       {
         ...updateData,
         updateBy: {
@@ -93,6 +94,10 @@ export class RolesService {
   }
 
   async remove(id: string, user: IUser) {
+    const foundRole = await this.RolemModel.findById(id)
+    if(foundRole?.name === ADMIN_ROLE){
+      throw new BadRequestException('không thể xóa role admin');
+    }
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'not found user';
     }

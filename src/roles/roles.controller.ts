@@ -27,9 +27,9 @@ export class RolesController {
     return this.rolesService.findOne(id);
   }
 
-  @Patch()
-  update(@Body() updateRoleDto: UpdateRoleDto, @User() user: IUser) {
-    return this.rolesService.update(updateRoleDto, user);
+  @Patch(':id')
+  update(@Param('id') id: string,@Body() updateRoleDto: UpdateRoleDto, @User() user: IUser) {
+    return this.rolesService.update(id,updateRoleDto, user);
   }
 
   @Delete(':id')
