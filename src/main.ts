@@ -8,13 +8,14 @@ import { TransformInterceptor } from './core/transform.interceptor';
 import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
  //cho phep ben ngoai co the xem duoc file
  app.useStaticAssets(join(__dirname, '..','public')) //css.js.image
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({whitelist: true}));
   const reflector = app.get(Reflector);
 
   //custome response
@@ -42,6 +43,9 @@ async function bootstrap() {
 
   //config cookie
   app.use(cookieParser());
+
+  //config helmet
+  app.use(helmet())
   await app.listen(configService.get<string>('PORT') || 8000);
 
  

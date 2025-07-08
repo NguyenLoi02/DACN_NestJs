@@ -13,10 +13,22 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
 import { ResumesModule } from './resumes/resumes.module';
 import { DatabasesModule } from './databases/databases.module';
+import { SubscribersModule } from './subscribers/subscribers.module';
+import { MailModule } from './mail/mail.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    //tối đa chạy 2 lần trong 60s
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60,
+          limit: 2,
+        },
+      ],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -39,6 +51,8 @@ import { DatabasesModule } from './databases/databases.module';
     RolesModule,
     ResumesModule,
     DatabasesModule,
+    SubscribersModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService,
