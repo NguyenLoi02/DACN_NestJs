@@ -13,11 +13,10 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileService } from './file.service';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Public, ResponseMessage } from 'src/decorator/customize';
 import path from 'path';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('file')
 export class FileController {
@@ -26,6 +25,20 @@ export class FileController {
   @Public()
   @Post('upload')
   @ResponseMessage('Upload single file')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        comment: { type: 'string' },
+        outletId: { type: 'integer' },
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('fileUpload'))
   uploadFile(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
@@ -75,23 +88,5 @@ export class FileController {
     };
   }
 
-  @Get()
-  findAll() {
-    return this.fileService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fileService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.fileService.update(+id, updateFileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fileService.remove(+id);
-  }
+ 
 }
