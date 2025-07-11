@@ -13,6 +13,7 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { IUser } from 'src/users/users.interface';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('companies')
 export class CompaniesController {
@@ -37,6 +38,7 @@ export class CompaniesController {
   }
 
   @Patch()
+  @ApiBody({ type: UpdateCompanyDto })
   update(@Body() updateCompanyDto: UpdateCompanyDto, @User() user: IUser) {
     return this.companiesService.update(updateCompanyDto, user);
   }

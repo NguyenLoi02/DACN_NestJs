@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from './users.interface';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -34,6 +35,7 @@ export class UsersController {
   }
 
   @Patch()
+  @ApiBody({ type: UpdateUserDto })
   @ResponseMessage('Update a new user')
   update(@Body() updateUserDto: UpdateUserDto,@User() user: IUser) {
     return this.usersService.update(updateUserDto,user);

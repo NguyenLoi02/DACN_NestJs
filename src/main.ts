@@ -65,12 +65,14 @@ async function bootstrap() {
     .addSecurityRequirements('token')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  });
+  SwaggerModule.setup('swagger', app, document);
 
   await app.listen(configService.get<string>('PORT') || 8000);
 }
 bootstrap();
+
+// , {
+//   swaggerOptions: {
+//     persistAuthorization: true,
+//   },
+// }

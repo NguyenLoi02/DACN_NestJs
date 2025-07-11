@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { MulterOptionsFactory, MulterModuleOptions } from "@nestjs/platform-express";
 import fs from 'fs'
 import { diskStorage } from "multer";
@@ -41,9 +41,7 @@ export class MulterConfigService implements MulterOptionsFactory {
                     const folder = req?.headers?.folder_type ?? "default";
                     this.ensureExists(`public/images/${folder}`);
                     cb(null, join(this.getRootPath(), `public/images/${folder}`))
-                    //this.getRootPath() dùng đẻ lấy đường link tuyệt đối
                 },
-                //chế biến tên file lưu trữ
                 filename: (req, file, cb) => {
                     //get image extension
                     let extName = path.extname(file.originalname);
@@ -53,8 +51,22 @@ export class MulterConfigService implements MulterOptionsFactory {
 
                     let finalName = `${baseName}-${Date.now()}${extName}`
                     cb(null, finalName)
-                }
-            })
+                },
+
+            }),
+            fileFilter: (req, file, cb) => {
+                const allowedFileTypes = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx'];
+                const fileExtension = file.originalname?.split('.').pop()?.toLowerCase() ?? '';
+                const isValidFileType = allowedFileTypes.includes(fileExtension);
+
+                if (!isValidFileType) {
+                    cb(new HttpException('Invalid file type', HttpStatus.UNPROCESSABLE_ENTITY), false);
+                } else
+                    cb(null, true);
+            },
+            limits: {
+                fileSize: 1024 * 1024 * 1 // 1MB
+            }
         };
     }
 

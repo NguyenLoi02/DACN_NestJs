@@ -99,10 +99,11 @@ export class ResumesService {
       ]);
   }
 
-  async update(_id: string, status: string, user: IUser) {
+  async update(_id: string, updateResumeDto: UpdateResumeDto, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
       throw new BadGatewayException('not found resume');
     }
+    const {status} = updateResumeDto
     const updated = await this.resumemModel.updateOne(
       { _id },
       {

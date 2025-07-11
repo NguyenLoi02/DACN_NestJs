@@ -4,6 +4,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { User, Public, ResponseMessage } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('permissions')
 export class PermissionsController {
@@ -28,6 +29,7 @@ export class PermissionsController {
   }
 
   @Patch()
+  @ApiBody({ type: UpdatePermissionDto })
   update(@Body() updatePermissionDto: UpdatePermissionDto, @User() user: IUser) {
     return this.permissionsService.update(updatePermissionDto, user);
   }

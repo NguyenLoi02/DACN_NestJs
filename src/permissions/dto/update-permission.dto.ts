@@ -1,6 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { CreatePermissionDto } from './create-permission.dto';
+import { ApiProperty ,PartialType} from '@nestjs/swagger';
 
 export class UpdatePermissionDto extends PartialType(CreatePermissionDto) {
-    _id:string
+  @ApiProperty()
+  _id:string
 }

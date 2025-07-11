@@ -4,6 +4,7 @@ import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { User, Public, ResponseMessage } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('subscribers')
 export class SubscribersController {
@@ -28,6 +29,7 @@ export class SubscribersController {
   }
 
   @Patch()
+  @ApiBody({ type: UpdateSubscriberDto })
   update(@Body() updateSubscriberDto: UpdateSubscriberDto, @User() user: IUser) {
     return this.subscribersService.update(updateSubscriberDto, user);
   }

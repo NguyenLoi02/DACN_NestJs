@@ -1,6 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType,ApiProperty } from '@nestjs/swagger';
 import { CreateCompanyDto } from './create-company.dto';
 
 export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {
-    _id: string
+  @ApiProperty()
+  _id: string;
 }

@@ -4,6 +4,7 @@ import { User, ResponseMessage, Public } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('jobs')
 export class JobsController {
@@ -29,6 +30,7 @@ export class JobsController {
   }
 
   @Patch()
+  @ApiBody({ type: UpdateJobDto })
   update(@Body() updateJobDto: UpdateJobDto, @User() user: IUser) {
     return this.jobsService.update(updateJobDto, user);
   }

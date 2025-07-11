@@ -4,6 +4,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { User, Public, ResponseMessage } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('roles')
 export class RolesController {
@@ -28,6 +29,7 @@ export class RolesController {
   }
 
   @Patch(':id')
+  @ApiBody({ type: UpdateRoleDto })
   update(@Param('id') id: string,@Body() updateRoleDto: UpdateRoleDto, @User() user: IUser) {
     return this.rolesService.update(id,updateRoleDto, user);
   }

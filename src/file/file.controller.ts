@@ -18,7 +18,7 @@ import { Public, ResponseMessage } from 'src/decorator/customize';
 import path from 'path';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
-@Controller('file')
+@Controller('files')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 

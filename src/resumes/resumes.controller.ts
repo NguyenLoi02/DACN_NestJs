@@ -4,6 +4,7 @@ import { CreateResumeDto } from './dto/create-resume.dto';
 import { UpdateResumeDto } from './dto/update-resume.dto';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('resumes')
 export class ResumesController {
@@ -29,9 +30,10 @@ export class ResumesController {
   }
 
   @Patch(':id')
+  @ApiBody({ type: UpdateResumeDto })
   @ResponseMessage('update a new resume')
-  update(@Param('id') id: string, @Body('status') status: string,@User() user: IUser) {
-    return this.resumesService.update(id, status,user);
+  update(@Param('id') id: string, @Body() updateResumeDto: UpdateResumeDto,@User() user: IUser) {
+    return this.resumesService.update(id, updateResumeDto,user);
   }
 
   @Delete(':id')
